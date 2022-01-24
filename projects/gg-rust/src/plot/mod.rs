@@ -1,46 +1,35 @@
-use csscolorparser::Color;
+pub mod aesthetic;
+
 use std::ops::Add;
+use crate::GGAesthetic;
+use std::ops::{ AddAssign};
+pub use csscolorparser::Color;
+
 
 #[derive(Clone)]
 pub struct GGPlot {
-    aesthetic: Option<GGAesthetic>,
-    geometric: Option<GGGeometric>,
+    aesthetic: GGAesthetic,
+    geometric: GGGeometric,
 }
 
 /// Builder pattern for GGPlot
 impl GGPlot {
     /// Build with custom aesthetic
     pub fn with_aesthetic(mut self, aesthetic: impl Into<GGAesthetic>) -> Self {
-        self.aesthetic = Some(aesthetic.into());
+        self.aesthetic = aesthetic.into();
         self
     }
     /// Build with custom geometric
     pub fn with_geometric(mut self, geometric: impl Into<GGGeometric>) -> Self {
-        self.geometric = Some(geometric.into());
+        self.geometric = geometric.into();
         self
     }
 }
 
-pub struct GGAesthetic {
-    color: Color,
-}
 
-impl GGAesthetic {
-    pub fn with_color(mut self, color: impl Into<Color>) -> Self {
-        self.color = color.into();
-        self
-    }
-    pub fn with_color_name(mut self, name: &str) -> Self {
-        todo!()
-    }
-    pub fn with_color_rgba(mut self, r: u8, g: u8, b: u8, a: u8) -> Self {
-        todo!()
-    }
-    pub fn with_color_hex(mut self, hex: &str) -> Self {
-        todo!()
-    }
-}
 
+
+#[derive(Clone,Debug)]
 pub enum GGGeometric {}
 
 #[test]
