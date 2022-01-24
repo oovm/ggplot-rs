@@ -1,8 +1,8 @@
-use std::iter::Cycle;
-use ggplot_error::GGError;
-use crate::add_impl;
 use super::*;
-
+use crate::add_impl;
+use ggplot_error::GGError;
+use std::iter::Cycle;
+use std::str::FromStr;
 
 #[derive(Clone, Debug)]
 pub struct GGAesthetic {
@@ -12,16 +12,17 @@ pub struct GGAesthetic {
     point: GGPoint,
     text: GGText,
 }
-
+// https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#lines-1
 #[derive(Clone, Debug)]
 pub struct GGLine {
     kind: GGLineStyle,
     size: GGSize,
+
 }
 
 /// (Black, White) × 4
 #[derive(Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
-pub struct GGLineStyle(pub [u8; 8]);
+pub struct GGLineStyle([u8; 8]);
 
 impl GGLineStyle {
     pub const BLANK: Self = Self([0, 0, 0, 0, 0, 0, 0, 0]);
@@ -38,29 +39,30 @@ impl GGLineStyle {
         self.eq(&Self::SOLID)
     }
     /// F
-    pub fn parse_hex(hex: &str) -> Result<Self> {
-        let style: Result<Vec<_>> = hex.chars().map(|c| Self::hex_to_u8(hex)).collect();
+    pub fn new(raw: [u8; 8]) -> Self {
+        Self(raw)
+    }
+}
+
+impl FromStr for GGLineStyle {
+    type Err = GGError;
+
+    fn from_str(hex: &str) -> Result<Self> {
+        let style: Result<Vec<_>> = hex.chars().map(|c| hex_to_u8(hex)).collect();
         let out = match style?[..] {
-            [] => { Self::BLANK }
-            [w4] => {
-                Self([w4, w4, w4, w4, w4, w4, w4, w4])
-            }
-            [b4, w4] => {
-                Self([b4, w4, b4, w4, b4, w4, b4, w4])
-            }
-            [b3, w3, b4, w4] => {
-                Self([b3, w3, b4, w4, b3, w3, b4, w4])
-            }
-            [b1, w1, b2, w2, b3, w3, b4, w4] => {
-                Self([b1, w1, b2, w2, b3, w3, b4, w4])
-            }
-            _ => return Err(GGError::SyntaxError("Unknown Hex Line Style".to_string()))
+            [] => Self::BLANK,
+            [w4] => Self([w4, w4, w4, w4, w4, w4, w4, w4]),
+            [b4, w4] => Self([b4, w4, b4, w4, b4, w4, b4, w4]),
+            [b3, w3, b4, w4] => Self([b3, w3, b4, w4, b3, w3, b4, w4]),
+            [b1, w1, b2, w2, b3, w3, b4, w4] => Self([b1, w1, b2, w2, b3, w3, b4, w4]),
+            _ => return Err(GGError::SyntaxError("Unknown Hex Line Style".to_string())),
         };
         Ok(out)
     }
-    fn hex_to_u8(hex: &str) -> Result<u8> {
-        Ok(u8::from_str_radix(hex, 16)?)
-    }
+}
+
+fn hex_to_u8(hex: &str) -> Result<u8> {
+    Ok(u8::from_str_radix(hex, 16)?)
 }
 
 impl<'a> IntoIterator for &'a GGLineStyle {
@@ -73,11 +75,7 @@ impl<'a> IntoIterator for &'a GGLineStyle {
         } else if self.is_solid() {
             GGLineDashOrBlank::Solid
         } else {
-            GGLineDashOrBlank::Cycle {
-                state: self.0.iter().cycle(),
-                should_draw: true,
-                rest_count: self.0[0],
-            }
+            GGLineDashOrBlank::Cycle { state: self.0.iter().cycle(), should_draw: true, rest_count: self.0[0] }
         }
     }
 }
@@ -87,8 +85,8 @@ impl<'a> Iterator for GGLineDashOrBlank<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {
-            Self::Blank => { Some(false) }
-            Self::Solid => { Some(true) }
+            Self::Blank => Some(false),
+            Self::Solid => Some(true),
             Self::Cycle { state, should_draw, rest_count } => unsafe {
                 if *rest_count == 0 {
                     *rest_count = *state.next().unwrap_unchecked();
@@ -98,7 +96,7 @@ impl<'a> Iterator for GGLineDashOrBlank<'a> {
                     *rest_count -= 1;
                     Some(*should_draw)
                 }
-            }
+            },
         }
     }
 }
@@ -106,15 +104,10 @@ impl<'a> Iterator for GGLineDashOrBlank<'a> {
 pub enum GGLineDashOrBlank<'a> {
     Blank,
     Solid,
-    Cycle {
-        state: Cycle<std::slice::Iter<'a, u8>>,
-        should_draw: bool,
-        rest_count: u8,
-    },
+    Cycle { state: Cycle<std::slice::Iter<'a, u8>>, should_draw: bool, rest_count: u8 },
 }
 
 impl GGLineStyle {}
-
 
 #[derive(Clone, Debug)]
 pub struct GGSize {}
@@ -150,9 +143,17 @@ impl GGAesthetic {
         self.color = hex.parse()?;
         Ok(self)
     }
+    #[inline]
+    pub fn with_line_style(mut self, line: GGLineStyle) -> Result<Self> {
+        self.line = line;
+        Ok(self)
+    }
+    #[inline]
+    pub fn with_line_style_hex(mut self, hex: &str) -> Result<Self> {
+        self.line = hex.parse()?;
+        Ok(self)
+    }
 }
-
-
 
 add_impl!(GGPlot:(aesthetic:GGAesthetic));
 
@@ -160,21 +161,15 @@ impl Add<Color> for GGAesthetic {
     type Output = Self;
 
     fn add(self, rhs: Color) -> Self::Output {
-        Self {
-            color: rhs,
-            ..self
-        }
+        Self { color: rhs, ..self }
     }
 }
 
 #[test]
 fn test() {
-    let s = GGLineStyle::parse_hex("5").unwrap();
+    let s: GGLineStyle = "5".parse().unwrap();
 
-    for (i, j) in s.into_iter().enumerate() {
-        if i < 10 {
-            println!("{}", j)
-        }
-        else { break; }
+    for j in s.into_iter().take(7) {
+        println!("{}", j)
     }
 }

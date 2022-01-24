@@ -1,10 +1,9 @@
 pub mod aesthetic;
 pub mod geometric;
 
-use csscolorparser::Color;
-use std::ops::Add;
 use crate::{GGAesthetic, GGGeometric, Result};
-use std::ops::{ AddAssign};
+use csscolorparser::Color;
+use std::ops::{Add, AddAssign};
 
 #[macro_export]
 macro_rules! add_impl {
@@ -12,7 +11,7 @@ macro_rules! add_impl {
         impl Add<$t> for $s {
             type Output = Self;
             fn add(self, rhs: $t) -> Self::Output {
-                Self {$key: rhs, ..self}
+                Self { $key: rhs, ..self }
             }
         }
         impl AddAssign<$t> for $s {
@@ -42,7 +41,3 @@ impl GGPlot {
         self
     }
 }
-
-
-
-

@@ -5,7 +5,7 @@
 mod error;
 mod error_3rd;
 
-pub use self::error::{MaybeRanged, Result, GGError};
+pub use self::error::{GGError, MaybeRanged, Result};
 
 #[cfg(feature = "csscolorparser")]
 pub extern crate csscolorparser;

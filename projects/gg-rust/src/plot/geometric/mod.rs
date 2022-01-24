@@ -1,4 +1,4 @@
 use super::*;
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub enum GGGeometric {}
