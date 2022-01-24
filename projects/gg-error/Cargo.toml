@@ -12,6 +12,7 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
+csscolorparser = {version="0.5.0", optional=true}
 
 [dev-dependencies]
 

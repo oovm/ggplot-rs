@@ -1,5 +1,5 @@
-// #[cfg(feature = "docx-rs")]
-// mod for_docx;
+#[cfg(feature = "csscolorparser")]
+mod for_csscolorparser;
 // #[cfg(feature = "git2")]
 // mod for_git2;
 // #[cfg(feature = "globset")]

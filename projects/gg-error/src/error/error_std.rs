@@ -18,6 +18,11 @@ error_wrap![
     std::fmt::Error => FormatError,
 ];
 
+impl From<std::num::ParseIntError> for GGError {
+    fn from(e: std::num::ParseIntError) -> Self {
+        Self::SyntaxError(e.to_string())
+    }
+}
 
 impl From<Infallible> for GGError {
     fn from(_: Infallible) -> Self {
