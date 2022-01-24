@@ -1,0 +1,22 @@
+[package]
+name = "ggplot-error"
+version = "1.0.0"
+authors = ["Aster <192607617@qq.com>"]
+description = "GG Plot Error Handlers"
+repository = "https://github.com/notedge/notedown-rs/tree/master/projects/notedown-ast"
+documentation = "https://docs.rs/tailwind-error"
+categories = []
+keywords = ["error", "tailwind"]
+readme = "Readme.md"
+license = "MPL-2.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+
+[features]
+default = []
+
+[package.metadata.docs.rs]
+all-features = true

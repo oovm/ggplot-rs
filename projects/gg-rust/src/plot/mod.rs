@@ -1,10 +1,27 @@
 pub mod aesthetic;
+pub mod geometric;
 
+use csscolorparser::Color;
 use std::ops::Add;
-use crate::GGAesthetic;
+use crate::{GGAesthetic, GGGeometric, Result};
 use std::ops::{ AddAssign};
-pub use csscolorparser::Color;
 
+#[macro_export]
+macro_rules! add_impl {
+    ($s:ty: ($key:ident: $t:ty)) => {
+        impl Add<$t> for $s {
+            type Output = Self;
+            fn add(self, rhs: $t) -> Self::Output {
+                Self {$key: rhs, ..self}
+            }
+        }
+        impl AddAssign<$t> for $s {
+            fn add_assign(&mut self, rhs: $t) {
+                self.$key = rhs
+            }
+        }
+    };
+}
 
 #[derive(Clone)]
 pub struct GGPlot {
@@ -29,8 +46,3 @@ impl GGPlot {
 
 
 
-#[derive(Clone,Debug)]
-pub enum GGGeometric {}
-
-#[test]
-fn test() {}

@@ -1,7 +1,9 @@
 [workspace]
 members = ["projects/*"]
 default-members = [
-    "projects/sub_projects",
+    "projects/gg-error",
+    "projects/gg-plot",
+    "projects/gg-rust",
 ]
 exclude = [
     "projects/.DS_Store",
