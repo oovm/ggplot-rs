@@ -1,3 +1,4 @@
+use std::iter::Cycle;
 use ggplot_error::GGError;
 use crate::add_impl;
 use super::*;
@@ -20,7 +21,7 @@ pub struct GGLine {
 
 /// (Black, White) × 4
 #[derive(Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
-pub struct GGLineStyle([u8; 8]);
+pub struct GGLineStyle(pub [u8; 8]);
 
 impl GGLineStyle {
     pub const BLANK: Self = Self([0, 0, 0, 0, 0, 0, 0, 0]);
@@ -38,37 +39,81 @@ impl GGLineStyle {
     }
     /// F
     pub fn parse_hex(hex: &str) -> Result<Self> {
-        let u = Self::hex_to_u64(hex)?;
-        let out = match hex.len() {
-            0 => { Self::BLANK }
-            1 => {
-                let [_, _, _, _, _, _, _, w4] = u.to_be_bytes();
+        let style: Result<Vec<_>> = hex.chars().map(|c| Self::hex_to_u8(hex)).collect();
+        let out = match style?[..] {
+            [] => { Self::BLANK }
+            [w4] => {
                 Self([w4, w4, w4, w4, w4, w4, w4, w4])
             }
-            2 => {
-                let [_, _, _, _, _, _, _, w4] = u.to_be_bytes();
-                Self([w4, w4, w4, w4, w4, w4, w4, w4])
-            }
-            4 => {
-                let [_, _, _, _, _, _, b4, w4] = u.to_be_bytes();
+            [b4, w4] => {
                 Self([b4, w4, b4, w4, b4, w4, b4, w4])
             }
-            8 => {
-                let [_, _, _, _, b3, w3, b4, w4] = u.to_be_bytes();
+            [b3, w3, b4, w4] => {
                 Self([b3, w3, b4, w4, b3, w3, b4, w4])
             }
-            16 => {
-                let [b1, w1, b2, w2, b3, w3, b4, w4] = u.to_be_bytes();
+            [b1, w1, b2, w2, b3, w3, b4, w4] => {
                 Self([b1, w1, b2, w2, b3, w3, b4, w4])
             }
             _ => return Err(GGError::SyntaxError("Unknown Hex Line Style".to_string()))
         };
         Ok(out)
     }
-    fn hex_to_u64(hex: &str) -> Result<u64> {
-        Ok(u64::from_str_radix(hex, 16)?)
+    fn hex_to_u8(hex: &str) -> Result<u8> {
+        Ok(u8::from_str_radix(hex, 16)?)
     }
 }
+
+impl<'a> IntoIterator for &'a GGLineStyle {
+    type Item = bool;
+    type IntoIter = GGLineDashOrBlank<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        if self.is_blank() {
+            GGLineDashOrBlank::Blank
+        } else if self.is_solid() {
+            GGLineDashOrBlank::Solid
+        } else {
+            GGLineDashOrBlank::Cycle {
+                state: self.0.iter().cycle(),
+                should_draw: true,
+                rest_count: self.0[0],
+            }
+        }
+    }
+}
+
+impl<'a> Iterator for GGLineDashOrBlank<'a> {
+    type Item = bool;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            Self::Blank => { Some(false) }
+            Self::Solid => { Some(true) }
+            Self::Cycle { state, should_draw, rest_count } => unsafe {
+                if *rest_count == 0 {
+                    *rest_count = *state.next().unwrap_unchecked();
+                    *should_draw = !*should_draw;
+                    Some(*should_draw)
+                } else {
+                    *rest_count -= 1;
+                    Some(*should_draw)
+                }
+            }
+        }
+    }
+}
+
+pub enum GGLineDashOrBlank<'a> {
+    Blank,
+    Solid,
+    Cycle {
+        state: Cycle<std::slice::Iter<'a, u8>>,
+        should_draw: bool,
+        rest_count: u8,
+    },
+}
+
+impl GGLineStyle {}
 
 
 #[derive(Clone, Debug)]
@@ -124,5 +169,12 @@ impl Add<Color> for GGAesthetic {
 
 #[test]
 fn test() {
-    println!("{:?}", GGLineStyle::parse_hex("FF"))
+    let s = GGLineStyle::parse_hex("5").unwrap();
+
+    for (i, j) in s.into_iter().enumerate() {
+        if i < 10 {
+            println!("{}", j)
+        }
+        else { break; }
+    }
 }
