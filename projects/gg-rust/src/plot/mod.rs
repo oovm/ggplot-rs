@@ -26,7 +26,26 @@ macro_rules! add_impl {
 pub struct GGPlot {
     aesthetic: GGAesthetic,
     geometric: GGGeometric,
+    coordinate: GGCoordinate,
+    scale: GGScale,
+    view: GGScaleView,
+    transform: GGTransform,
+    transition: GGTransition,
+    facet: GGFacet,
 }
+
+
+pub struct GGScaleView {}
+
+pub struct GGTransform {}
+
+pub struct GGTransition {}
+
+pub struct GGCoordinate {}
+
+pub struct GGScale {}
+
+pub struct GGFacet {}
 
 /// Builder pattern for GGPlot
 impl GGPlot {
