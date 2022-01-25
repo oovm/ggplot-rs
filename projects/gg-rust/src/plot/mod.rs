@@ -1,6 +1,6 @@
 pub mod aesthetic;
 pub mod geometric;
-pub mod mergeable;
+pub mod merge_able;
 
 use crate::{GGAesthetic, GGGeometric, Result};
 use csscolorparser::Color;
