@@ -1,6 +1,7 @@
 pub mod aesthetic;
 pub mod geometric;
 pub mod merge_able;
+pub mod coordinate;
 
 use crate::{GGAesthetic, GGGeometric, Result};
 use csscolorparser::Color;
@@ -45,8 +46,7 @@ pub struct GGTransform {}
 #[derive(Clone, Debug, Default, Merge)]
 pub struct GGTransition {}
 
-#[derive(Clone, Debug, Default, Merge)]
-pub struct GGCoordinate {}
+
 
 #[derive(Clone, Debug, Default, Merge)]
 pub struct GGScale {}

@@ -93,7 +93,7 @@ impl MergeField {
             #[inline]
             #[automatically_derived]
             pub fn #setter(&mut self, #field_name: impl Into<#field_ty>) {
-                self.#field_name = Some(#field_name)
+                self.#field_name = Some(#field_name.into())
             }
         }
     }
@@ -117,7 +117,7 @@ impl MergeField {
             #[automatically_derived]
             #[allow(clippy::needless_update)]
             pub fn #builder(self, #field_name: impl Into<#field_ty>) -> Self {
-                Self { #field_name: Some(#field_name), ..self }
+                Self { #field_name: Some(#field_name.into()), ..self }
             }
         }
     }
