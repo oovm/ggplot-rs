@@ -2,11 +2,11 @@
 name = "ggrust"
 version = "0.1.0"
 authors = ["Aster <192607617@qq.com>"]
-description = "..."
-repository = "https://github.com/notedge/notedown-rs/tree/master/projects/notedown-ast"
+description = "Grammar of Graphics in rust"
+repository = "https://github.com/oovm/ggplot-rs"
 readme = "Readme.md"
 license = "MPL-2.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 csscolorparser = "0.5.0"
@@ -23,3 +23,5 @@ features = ["csscolorparser"]
 
 [features]
 default = []
+svg = []
+

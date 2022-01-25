@@ -1,10 +1,23 @@
 use plotters_svg::SVGBackend;
-
 use plotters::prelude::*;
+
+use crate::GGPlot;
+
+impl GGPlot {
+    #[cfg(feature = "svg")]
+    pub fn draw_svg() {
+
+    }
+}
+
+pub fn ggplot() -> GGPlot {
+    GGPlot::default()
+}
+
 
 #[test]
 fn main() {
-    let drawing_area = BitMapBackend::new("images/2.1.png", (600, 400)).into_drawing_area();
+    let drawing_area = SVGBackend::new("images/2.1.png", (600, 400)).into_drawing_area();
 
     drawing_area.fill(&WHITE).unwrap();
 

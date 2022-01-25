@@ -1,15 +1,17 @@
 [package]
-name = "ggplot"
+name = "ggplot-test-data"
 version = "0.1.1"
 authors = ["Aster <192607617@qq.com>"]
-description = "Grammar of Graphics style plotter"
+description = "Test datasets for ggplot"
 repository = "https://github.com/oovm/ggplot-rs"
 readme = "Readme.md"
 license = "MPL-2.0"
 edition = "2021"
 
+[lib]
+proc-macro = true
+
 [dependencies]
-ggrust ={ version="0.1.*", path = "../gg-rust"}
 
 [dev-dependencies]
 
