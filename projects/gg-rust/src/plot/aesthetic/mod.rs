@@ -4,10 +4,9 @@ mod line_style;
 use super::*;
 use crate::add_impl;
 use ggplot_error::GGError;
-use std::iter::Cycle;
-use std::str::FromStr;
+use std::{iter::Cycle, str::FromStr};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGAesthetic {
     color: Option<Color>,
     line: Option<GGLine>,
@@ -17,7 +16,7 @@ pub struct GGAesthetic {
 }
 
 // https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#lines-1
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct GGLine {
     /// The size of a line, must positive
     size: f32,
@@ -42,10 +41,30 @@ pub enum GGLineJoint {
     Square,
 }
 
+
 #[derive(Clone, Debug)]
 pub struct GGPolygon {
     fill: Color,
-    lines: Vec<GGLine>
+    lines: Vec<GGLine>,
+}
+
+impl Default for GGPolygon {
+    fn default() -> Self {
+        Self{
+            fill: Default::default(),
+            lines: vec![]
+        }
+    }
+}
+
+impl Default for GGPoint {
+    fn default() -> Self {
+        Self{
+            size: 0.0,
+            edge: Default::default(),
+            fill: Default::default()
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -55,18 +74,21 @@ pub struct GGPoint {
     fill: Color,
 }
 
+impl Default for GGText {
+    fn default() -> Self {
+        Self {
+            font_family: vec![]
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct GGText {
-    font_family: Vec<String>
+    font_family: Vec<String>,
 }
 
 /// Builder pattern of Aesthetic
 impl GGAesthetic {
-    #[inline]
-    pub fn with_color(mut self, color: impl Into<Color>) -> Self {
-        self.color = Some(color.into());
-        self
-    }
     #[inline]
     pub fn with_color_name(mut self, name: &str) -> Result<Self> {
         self.color = Some(name.parse()?);
@@ -99,4 +121,3 @@ impl GGLine {
 
 add_impl!(GGPlot: (aesthetic: GGAesthetic));
 add_impl!(GGAesthetic: (color: Color));
-

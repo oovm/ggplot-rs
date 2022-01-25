@@ -5,6 +5,7 @@ pub mod merge_able;
 use crate::{GGAesthetic, GGGeometric, Result};
 use csscolorparser::Color;
 use std::ops::{Add, AddAssign};
+use ggplot_derive::Merge;
 
 #[macro_export]
 macro_rules! add_impl {
@@ -23,7 +24,7 @@ macro_rules! add_impl {
     };
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGPlot {
     aesthetic: Option<GGAesthetic>,
     geometric: Option<GGGeometric>,
@@ -35,31 +36,20 @@ pub struct GGPlot {
     facet: Option<GGFacet>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGScaleView {}
-#[derive(Clone)]
+
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGTransform {}
-#[derive(Clone)]
+
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGTransition {}
-#[derive(Clone)]
+
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGCoordinate {}
-#[derive(Clone)]
+
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGScale {}
-#[derive(Clone)]
+
+#[derive(Clone, Debug, Default, Merge)]
 pub struct GGFacet {}
-
-/// Builder pattern for GGPlot
-impl GGPlot {
-    /// Build with custom aesthetic
-    pub fn with_aesthetic(mut self, aesthetic: impl Into<GGAesthetic>) -> Self {
-        self.aesthetic = Some(aesthetic.into());
-        self
-    }
-    /// Build with custom geometric
-    pub fn with_geometric(mut self, geometric: impl Into<GGGeometric>) -> Self {
-        self.geometric = Some(geometric.into());
-        self
-    }
-}
-
-

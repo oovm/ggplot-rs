@@ -21,15 +21,28 @@ impl GGLineStyle {
     pub fn iter(&self) -> GGLineDrawOrBlank {
         if self.is_blank() {
             GGLineDrawOrBlank::Blank
-        } else if self.is_solid() {
+        }
+        else if self.is_solid() {
             GGLineDrawOrBlank::Solid
-        } else {
+        }
+        else {
             GGLineDrawOrBlank::Cycle { state: self.0.iter().cycle(), should_draw: true, rest_count: self.0[0] }
         }
     }
 }
 
 
+impl Default for GGLineStyle {
+    fn default() -> Self {
+        Self::SOLID
+    }
+}
+
+impl Default for GGLineJoint {
+    fn default() -> Self {
+        Self::Round
+    }
+}
 
 impl FromStr for GGLineStyle {
     type Err = GGError;
@@ -73,7 +86,8 @@ impl<'a> Iterator for GGLineDrawOrBlank<'a> {
                     *rest_count = *state.next().unwrap_unchecked();
                     *should_draw = !*should_draw;
                     Some(*should_draw)
-                } else {
+                }
+                else {
                     *rest_count -= 1;
                     Some(*should_draw)
                 }

@@ -1,12 +1,12 @@
 [package]
 name = "ggplot-derive"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Aster <192607617@qq.com>"]
-description = "..."
-repository = "https://github.com/notedge/notedown-rs/tree/master/projects/notedown-ast"
+description = "derive(Merge) for GGPlot"
+repository = "https://github.com/oovm/ggplot-rs"
 readme = "Readme.md"
 license = "MPL-2.0"
-edition = "2018"
+edition = "2021"
 
 [lib]
 proc-macro = true
@@ -19,4 +19,5 @@ quote= "1.0.14"
 [dev-dependencies]
 
 [features]
-default = []
+default = ["add"]
+add = []

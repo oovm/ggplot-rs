@@ -12,6 +12,7 @@ edition = "2018"
 csscolorparser = "0.5.0"
 plotters-svg = "0.3.1"
 plotters="0.3.1"
+ggplot-derive = "0.1.1"
 
 [dependencies.ggplot-error]
 version =  "1.0.*"

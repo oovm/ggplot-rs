@@ -1,6 +1,5 @@
 use super::*;
 
-
 pub enum MergeFieldKind {
     Option(Type),
 }
@@ -11,36 +10,28 @@ impl MergeFieldKind {
             Type::Path(type_path) if type_path.qself.is_none() && path_is_option(&type_path.path) => {
                 Some(Self::Option(extract_type(type_path)?))
             }
-            _ => None
+            _ => None,
         }
     }
     pub fn as_getter_type(&self) -> &Type {
         match self {
-            Self::Option(t) => {
-                t
-            }
+            Self::Option(t) => t,
         }
     }
     pub fn as_setter_type(&self) -> &Type {
         match self {
-            Self::Option(t) => {
-                t
-            }
+            Self::Option(t) => t,
         }
     }
     pub fn as_builder_type(&self) -> &Type {
         match self {
-            Self::Option(t) => {
-                t
-            }
+            Self::Option(t) => t,
         }
     }
 }
 
 fn path_is_option(path: &Path) -> bool {
-    path.leading_colon.is_none()
-        && path.segments.len() == 1
-        && path.segments.iter().next().unwrap().ident == "Option"
+    path.leading_colon.is_none() && path.segments.len() == 1 && path.segments.iter().next().unwrap().ident == "Option"
 }
 
 fn extract_type(type_path: &TypePath) -> Option<Type> {

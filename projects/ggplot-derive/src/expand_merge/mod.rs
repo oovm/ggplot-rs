@@ -3,12 +3,9 @@ mod field_kind;
 pub use self::field_kind::MergeFieldKind;
 
 use super::*;
-use syn::TypePath;
-use proc_macro2::{Ident, Span};
-use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{Data, DataStruct, Field, Fields, Path, PathSegment};
-use syn::{GenericArgument, PathArguments, Type};
+use proc_macro2::{Ident, Span, TokenStream};
+use quote::{quote};
+use syn::{Data, DataStruct, Field, Fields, GenericArgument, Path, PathArguments, Type, TypePath};
 
 pub fn merge_expand(input: DeriveInput) -> TokenStream {
     let name = input.ident;
@@ -19,22 +16,14 @@ pub fn merge_expand(input: DeriveInput) -> TokenStream {
     let mut parsed = vec![];
     for i in fields {
         match MergeField::parse_field(&i) {
-            Some(s) => { parsed.push(s)}
-            None => {panic!("field does not merge-able")}
+            Some(s) => parsed.push(s),
+            None => {
+                panic!("field does not merge-able")
+            }
         }
     }
-    let getters = parsed.iter().map(|field|field.as_getter());
-    let setters = parsed.iter().map(|field|field.as_setter());
-    let builder = parsed.iter().map(|field|field.as_builder());
-    quote! {
-        impl #name {
-            #(#getters)*
-            #(#setters)*
-            #(#builder)*
-        }
-    }
+    MergeField::builder_pattern(name, &parsed)
 }
-
 
 pub struct MergeField {
     kind: MergeFieldKind,
@@ -42,11 +31,19 @@ pub struct MergeField {
 }
 
 impl MergeField {
-    pub fn mg(self: Vec<Self>) {
-
+    pub fn builder_pattern(name: Ident, fields: &[Self]) -> TokenStream {
+        let getters = fields.iter().map(|field| field.as_getter());
+        let setters = fields.iter().map(|field| field.as_setter());
+        let builder = fields.iter().map(|field| field.as_builder());
+        quote! {
+            impl #name {
+                #(#getters)*
+                #(#setters)*
+                #(#builder)*
+            }
+        }
     }
 }
-
 
 impl MergeField {
     pub fn parse_field(f: &Field) -> Option<Self> {
@@ -55,7 +52,6 @@ impl MergeField {
         Some(Self { kind, field_name: name })
     }
 }
-
 
 impl MergeField {
     fn getter_name(&self) -> Ident {
@@ -73,8 +69,8 @@ impl MergeField {
         quote! {
             #[inline]
             #[automatically_derived]
-            pub fn #getter(&self) -> &#field_ty {
-                &self.#field_name.unwrap_or_default()
+            pub fn #getter(&self) -> #field_ty {
+                self.#field_name.to_owned().unwrap_or_default()
             }
         }
     }
@@ -96,13 +92,12 @@ impl MergeField {
         quote! {
             #[inline]
             #[automatically_derived]
-            pub fn #setter(&self, #field_name: #field_ty) {
-                &self.#field_name = Some(#field_name)
+            pub fn #setter(&mut self, #field_name: impl Into<#field_ty>) {
+                self.#field_name = Some(#field_name)
             }
         }
     }
 }
-
 
 impl MergeField {
     fn builder_name(&self) -> Ident {
@@ -120,7 +115,8 @@ impl MergeField {
         quote! {
             #[inline]
             #[automatically_derived]
-            pub fn #builder(self, #field_name: #field_ty) -> Self {
+            #[allow(clippy::needless_update)]
+            pub fn #builder(self, #field_name: impl Into<#field_ty>) -> Self {
                 Self { #field_name: Some(#field_name), ..self }
             }
         }

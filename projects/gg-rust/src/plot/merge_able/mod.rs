@@ -1,6 +1,5 @@
 use super::*;
 
-
 impl Add<GGPlot> for GGPlot {
     type Output = Self;
 

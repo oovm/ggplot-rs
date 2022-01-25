@@ -1,3 +1,5 @@
+https://rstudio-pubs-static.s3.amazonaws.com/430259_91f533e1aaff4f0fb559e9d4d02dd286.html
+
 G2
 
 - 图形属性 Attribute：负责将数据中的变量映射至图形空间。
