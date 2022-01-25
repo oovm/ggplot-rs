@@ -9,11 +9,11 @@ use std::str::FromStr;
 
 #[derive(Clone, Debug)]
 pub struct GGAesthetic {
-    color: Color,
-    line: GGLine,
-    polygon: GGPolygon,
-    point: GGPoint,
-    text: GGText,
+    color: Option<Color>,
+    line: Option<GGLine>,
+    polygon: Option<GGPolygon>,
+    point: Option<GGPoint>,
+    text: Option<GGText>,
 }
 
 // https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#lines-1
@@ -64,27 +64,27 @@ pub struct GGText {
 impl GGAesthetic {
     #[inline]
     pub fn with_color(mut self, color: impl Into<Color>) -> Self {
-        self.color = color.into();
+        self.color = Some(color.into());
         self
     }
     #[inline]
     pub fn with_color_name(mut self, name: &str) -> Result<Self> {
-        self.color = name.parse()?;
+        self.color = Some(name.parse()?);
         Ok(self)
     }
     #[inline]
     pub fn with_color_rgba(mut self, r: u8, g: u8, b: u8, a: u8) -> Self {
-        self.color = Color::from_rgba_u8(r, g, b, a);
+        self.color = Some(Color::from_rgba_u8(r, g, b, a));
         self
     }
     #[inline]
     pub fn with_color_hex(mut self, hex: &str) -> Result<Self> {
-        self.color = hex.parse()?;
+        self.color = Some(hex.parse()?);
         Ok(self)
     }
     #[inline]
     pub fn with_line_style(mut self, line: GGLine) -> Result<Self> {
-        self.line = line;
+        self.line = Some(line);
         Ok(self)
     }
 }

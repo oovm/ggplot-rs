@@ -19,7 +19,13 @@ impl GGLineStyle {
         Self(raw)
     }
     pub fn iter(&self) -> GGLineDrawOrBlank {
-        self.clone().into_iter()
+        if self.is_blank() {
+            GGLineDrawOrBlank::Blank
+        } else if self.is_solid() {
+            GGLineDrawOrBlank::Solid
+        } else {
+            GGLineDrawOrBlank::Cycle { state: self.0.iter().cycle(), should_draw: true, rest_count: self.0[0] }
+        }
     }
 }
 
@@ -51,13 +57,7 @@ impl<'a> IntoIterator for &'a GGLineStyle {
     type IntoIter = GGLineDrawOrBlank<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        if self.is_blank() {
-            GGLineDrawOrBlank::Blank
-        } else if self.is_solid() {
-            GGLineDrawOrBlank::Solid
-        } else {
-            GGLineDrawOrBlank::Cycle { state: self.0.iter().cycle(), should_draw: true, rest_count: self.0[0] }
-        }
+        self.iter()
     }
 }
 
@@ -82,7 +82,7 @@ impl<'a> Iterator for GGLineDrawOrBlank<'a> {
     }
 }
 
-enum GGLineDrawOrBlank<'a> {
+pub enum GGLineDrawOrBlank<'a> {
     Blank,
     Solid,
     Cycle { state: Cycle<std::slice::Iter<'a, u8>>, should_draw: bool, rest_count: u8 },
