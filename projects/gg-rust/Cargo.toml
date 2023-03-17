@@ -9,10 +9,11 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
-csscolorparser = "0.5.0"
+csscolorparser = "0.6.2"
 plotters-svg = "0.3.1"
 plotters="0.3.1"
 ggplot-derive = "0.1.1"
+palette = "0.6.1"
 
 [dependencies.ggplot-error]
 version =  "1.0.*"

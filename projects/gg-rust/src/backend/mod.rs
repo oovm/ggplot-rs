@@ -2,6 +2,10 @@ use plotters::prelude::*;
 
 use crate::GGPlot;
 
+pub trait GGBackend {
+    fn draw(&mut self);
+}
+
 impl GGPlot {
     #[cfg(feature = "svg")]
     pub fn draw() {
@@ -19,6 +23,4 @@ impl GGPlot {
     }
 }
 
-fn main() {
-
-}
+fn main() {}

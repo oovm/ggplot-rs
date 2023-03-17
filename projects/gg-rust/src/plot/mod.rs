@@ -1,12 +1,15 @@
+use std::ops::{Add, AddAssign};
+
+use csscolorparser::Color;
+use ggplot_derive::Merge;
+
+use crate::{GGAesthetic, GGGeometric, Result};
+use crate::plot::coordinate::GGCoordinate;
+
 pub mod aesthetic;
 pub mod geometric;
 pub mod merge_able;
 pub mod coordinate;
-
-use crate::{GGAesthetic, GGGeometric, Result};
-use csscolorparser::Color;
-use std::ops::{Add, AddAssign};
-use ggplot_derive::Merge;
 
 #[macro_export]
 macro_rules! add_impl {
@@ -45,7 +48,6 @@ pub struct GGTransform {}
 
 #[derive(Clone, Debug, Default, Merge)]
 pub struct GGTransition {}
-
 
 
 #[derive(Clone, Debug, Default, Merge)]
